@@ -1,0 +1,454 @@
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock Details with Prediction</title>
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='/css/responsive.css') }}"> -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='/css/StockDetails_style.css') }}">
+
+        <!-- CSS for Tabs -->
+        <style>
+            .tab {
+                display: flex;
+                justify-content: space-between;
+                cursor: pointer;
+                padding: 10px;
+                background-color: #f1f1f1;
+                border: 1px solid #ccc;
+            }
+
+            .tabcontent {
+                display: none;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+
+            .tablinks.active {
+                background-color: #ccc;
+            }
+
+            .table-section {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .table-section table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table-section table th,
+            .table-section table td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .table-section table th {
+                background-color: #f1f1f1;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <!-- Page Header -->
+            <header class="pageheader" id="webname">
+                <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="MarketMinds Logo" class="logo">
+                <h1>MarketMinds</h1>
+                <div class="search-bar">
+                    <form action="{{ url_for('stock_details') }}" method="POST" class="search-container">
+                        <input type="text" id="stock_symbol" name="stock_symbol" class="search-box"
+                            placeholder="Search for a company" required autocomplete="on">
+                        <button type="submit" class="search-btn">Get Details</button>
+                    </form>
+                </div>
+            </header>
+
+            <!-- TradingView Ticker Widget BEGIN -->
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                        {
+                            "symbols": [
+                                {
+                                    "proName": "BPCL",
+                                    "title": "BPCL"
+                                },
+                                {
+                                    "proName": "SBIN",
+                                    "title": "SBI"
+                                },
+                                {
+                                    "proName": "BHARTIARTL",
+                                    "title": "Bharati Airtel"
+                                },
+                                {
+                                    "proName": "LT",
+                                    "title": "Larsen & Tubro"
+                                },
+                                {
+                                    "proName": "AARTIIND",
+                                    "title": "Aarti Industries"
+                                },
+                                {
+                                    "proName": "IRCTC",
+                                    "title": "IRCTC"
+                                },
+                                {
+                                    "proName": "TATAMOTORS",
+                                    "title": "Tata Motors"
+                                },
+                                {
+                                    "proName": "YESBANK",
+                                    "title": "Yes Bank"
+                                },
+                                {
+                                    "proName": "CANBK",
+                                    "title": "Canara Bank"
+                                },
+                                {
+                                    "proName": "WIPRO",
+                                    "title": "Wipro"
+                                },
+                                {
+                                    "proName": "INFY",
+                                    "title": "Infosys"
+                                },
+                                {
+                                    "proName": "HINDUNILVR",
+                                    "title": "Hindustan Uniliver"
+                                },
+                                {
+                                    "proName": "CIPLA",
+                                    "title": "Cipla"
+                                },
+                                {
+                                    "proName": "CHOLAFIN",
+                                    "title": "Cholamandalam Investment"
+                                },
+                                {
+                                    "proName": "ADANIENT",
+                                    "title": "Adani Enterprises"
+                                },
+                                {
+                                    "proName": "EICHERMOT",
+                                    "title": "Eicher Motors"
+                                },
+                                {
+                                    "proName": "AMBUJACEM",
+                                    "title": "Ambuja Cement"
+                                },
+                                {
+                                    "proName": "ASIANPAINT",
+                                    "title": "Asian Paints"
+                                },
+                                {
+                                    "proName": "PATANJALI",
+                                    "title": "Patanjali Foods"
+                                },
+                                {
+                                    "proName": "PGHH",
+                                    "title": "P&G Hygiene and HealthCare"
+                                },
+                                {
+                                    "proName": "PAYTM",
+                                    "title": "Paytm"
+                                },
+                                {
+                                    "proName": "HINDPETRO",
+                                    "title": "Hindustan Petroleum"
+                                }
+                            ],
+                                "showSymbolLogo": true,
+                                    "colorTheme": "light",
+                                        "isTransparent": false,
+                                            "displayMode": "adaptive",
+                                                "locale": "en"
+                        }
+                    </script>
+            </div>
+            <!-- TradingView Ticker Widget END -->
+
+            <!-- Stock Details Header -->
+            <header class="header" id="subname">
+                <h1>Stock Details for {{ stock_name }} ({{ nm }})</h1>
+            </header>
+
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <a href="#TodaysData">Today's Data</a>
+                <a href="#chart">Chart</a>
+                <a href="#overview">Overview</a>
+                <a href="#forecastprices">Forecast Price</a>
+                <a href="#suggestions">Trading Suggestions</a>
+            </nav>
+
+            <!-- Today's Data Section -->
+            <section id="TodaysData" class="TodaysData">
+                <h2>Today's Data</h2>
+                <div class="stock-data-container">
+                    <div class="stock-card blue">
+                        <h3 id="open">{{ todays_open }} INR</h3>
+                        <p><b>OPEN</b></p>
+                    </div>
+                    <div class="stock-card yellow">
+                        <h3 id="high">{{ todays_high }} INR</h3>
+                        <p><b>HIGH</b></p>
+                    </div>
+                    <div class="stock-card green">
+                        <h3 id="low">{{ todays_low }} INR</h3>
+                        <p><b>LOW</b></p>
+                    </div>
+                    <div class="stock-card red">
+                        <h3 id="close">{{ todays_close }} INR</h3>
+                        <p> <b>PREVIOUS CLOSE</b></p>
+                    </div>
+                    <div class="stock-card yellow">
+                        <h3 id="adjClose">{{ todays_adj_close }} INR</h3>
+                        <p><b>ADJ CLOSE</b></p>
+                    </div>
+                    <div class="stock-card blue">
+                        <h3 id="volume">{{ todays_volume }}</h3>
+                        <p><b>VOLUME</b></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section id="chart" class="chart">
+                <h2>Chart</h2>
+                <div class="chart-container">
+                    <div id="tradingview_ba3c5" style ="width:95%;">
+                    <div class="tradingview-widget-copyright">
+                        <a href="https://www.tradingview.com" rel="noopener" target="_blank">
+                            <span class="blue-text">Track all markets</span>
+                        </a> on TradingView
+                    </div>
+                </div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                        new TradingView.widget({
+                            "width":"97%",
+                            "height": "600vh",
+                            "symbol": "{{ nm }}",
+                            "interval": "1m",
+                            "timezone": "IND",
+                            "theme": "light",
+                            "style": "1",
+                            "locale": "en",
+                            "toolbar_bg": "#f1f3f6",
+                            "enable_publishing": false,
+                            "withdateranges": true,
+                            "range": "YTD",
+                            "hide_side_toolbar": false,
+                            "allow_symbol_change": true,
+                            "details": true,
+                            "hotlist": true,
+                            "calendar": true,
+                            "news": ["headlines"],
+                            "studies": ["MACD@tv-basicstudies"],
+                            "container_id": "tradingview_ba3c5"
+                        });
+                    </script>
+                </div>
+            </section>
+            <!-- Overview Section -->
+            <section id="overview" class="overview">
+                <h2>Overview</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Company Name:</span>
+                        <span class="value">{{ stock_name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Sector:</span>
+                        <span class="value">{{ sector }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Industry:</span>
+                        <span class="value">{{ industry }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Market Cap:</span>
+                        <span class="value">{{ market_cap }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">52 Week High:</span>
+                        <span class="value">{{ fifty_two_week_high }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">52 Week Low:</span>
+                        <span class="value">{{ fifty_two_week_low }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">P/E Ratio:</span>
+                        <span class="value">{{ pe_ratio }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">P/B Ratio:</span>
+                        <span class="value">{{ pb_ratio }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Devidend Yield:</span>
+                        <span class="value">{{ dividend_yield }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Debt:</span>
+                        <span class="value">{{ debt }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Enterprise value:</span>
+                        <span class="value">{{ enterprise_value }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">No.Of Shares:</span>
+                        <span class="value">{{ no_of_shares }}</span>
+                    </div>
+                    <div class="info-item description">
+                      <div style="padding-right: 30px;"> <span class="label">Description:</span></div>
+                        <span class="value">{{ description }}</span>
+                    </div>
+                </div>
+            </section>
+
+            </section>
+            <section id="pros-cons" class="pros-cons-section">
+                <h2>Pros and Cons</h2>
+                <div class="pros-cons-container">
+                    <div class="pros-container">
+                        <h3>Pros</h3>
+                        <ul class="pros-list">
+                            <li>{{ stock_name }} has a strong market position in the {{ sector }} sector.</li>
+                            <li>The stock's {{ pe_ratio }} P/E ratio suggests it's fairly valued.</li>
+                            <li>The ARIMA model predicts a positive trend with a closing price of {{ ARIMA_pred }}.</li>
+                            <li>The LR Models Prediction({{ LR_pred }})has lower RMSE: ±{{ error_LR }}</li>
+                            <li>Dividend Yield: {{ dividend_yield }}% indicates a stable income for investors.</li>
+                            <li>Enterprise Value: {{ enterprise_value }} is a sign of growth potential.</li>
+                            <li>ROE of {{ roe }} shows profitability.</li>
+                        </ul>
+                    </div>
+                    <div class="cons-container">
+                        <h3>Cons</h3>
+                        <ul class="cons-list">
+                            <li>The LSTM model indicates volatility with a predicted price of {{ LSTM_pred }}.</li>
+                            <li>LSTM prediction ({{ LSTM_pred }}) has a higher RMSE: ±{{ error_LSTM }}.
+                            </li>
+                            <li>Debt: {{ debt }} suggests the company is leveraging.</li>
+                            <li>52-week low: {{ fifty_two_week_low }} shows the stock has seen recent weakness.</li>
+                            <li>Market Cap of {{ market_cap }} may indicate it’s not a large player in the market.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- Forecast Price Section -->
+            <section id="forecastprices" class="forecastprices">
+                <h2>Forecast Price</h1>
+                    <div class="forecast-grid">
+                        <div class="prediction-item">
+                            <h1>TRENDS</h1>
+                            <div class="img-cont">
+                                <img src="{{ url_for('static', filename='/images/TRENDS.png') }}" alt="Trends Graph">
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <h1>ARIMA Model</h1>
+                            <div class="img-cont">
+                                <img src="{{ url_for('static', filename='/images/ARIMA.png') }}" alt="ARIMA Prediction Graph">
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <h1>LSTM Model</h1>
+                            <div class="img-cont">
+                                <img src="{{ url_for('static', filename='/images/LSTM.png') }}" alt="LSTM Prediction Graph">
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <h1>Linear Regression</h1>
+                            <div class="img-cont">
+                                <img src="{{ url_for('static', filename='/images/LR.png') }}"
+                                    alt="Linear Regression Prediction Graph">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-prediction">
+                        <div class="model-block">
+                            <h2>ARIMA Model Prediction</h2>
+                            <div class="prediction-card green">
+                                <h3 id="arima-pred">{{ ARIMA_pred }}</h3>
+                                <p>NEXT DAY'S {{ nm }} CLOSING PRICE BY ARIMA</p>
+                            </div>
+
+                            <div class="prediction-card red">
+                                <h3 id="arima-rmse">±{{ error_ARIMA }}</h3>
+                                <p>ARIMA RMSE</p>
+                            </div>
+                        </div>
+                        <div class="model-block">
+                            <h2>LSTM Model Prediction</h2>
+                            <div class="prediction-card yellow">
+                                <h3 id="lstm-pred">{{ LSTM_pred }}</h3>
+                                <p>NEXT DAY'S {{ nm }} CLOSING PRICE BY LSTM</p>
+                            </div>
+                            <div class="prediction-card red">
+                                <h3 id="lstm-rmse">±{{ error_LSTM }}</h3>
+                                <p>LSTM RMSE</p>
+                            </div>
+                        </div>
+                        <div class="model-block">
+                            <h2>Linear Regression Prediction</h2>
+                            <div class="prediction-card blue">
+                                <h3 id="lr-pred">{{ LR_pred }}</h3>
+                                <p>NEXT DAY'S {{ nm }} CLOSING PRICE BY LINEAR REGRESSION</p>
+                            </div>
+                            <div class="prediction-card red">
+                                <h3 id="lr-rmse">±{{ error_LR }}</h3>
+                                <p>LINEAR REGRESSION RMSE</p>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+            <!-- my updates -->
+            <!-- Suggestions Section -->
+            <section id="suggestions" class="suggestions">
+                <h2>Trading Suggestions</h2>
+                <div class="suggestion-card">
+                    {% if ARIMA_pred > todays_close %}
+                    <h3>ARIMA Suggestion: <span class="buy">BUY</span></h3>
+                    {% elif ARIMA_pred < todays_close %} <h3>ARIMA Suggestion: <span class="sell">SELL</span></h3>
+                        {% else %}
+                        <h3>ARIMA Suggestion: <span class="hold">HOLD</span></h3>
+                        {% endif %}
+                </div>
+                <div class="suggestion-card">
+                    {% if LSTM_pred > todays_close %}
+                    <h3>LSTM Suggestion: <span class="buy">BUY</span></h3>
+                    {% elif LSTM_pred < todays_close %} <h3>LSTM Suggestion: <span class="sell">SELL</span></h3>
+                        {% else %}
+                        <h3>LSTM Suggestion: <span class="hold">HOLD</span></h3>
+                        {% endif %}
+                </div>
+                <div class="suggestion-card">
+                    {% if LR_pred > todays_close %}
+                    <h3>Linear Regression Suggestion: <span class="buy">BUY</span></h3>
+                    {% elif LR_pred < todays_close %} <h3>Linear Regression Suggestion: <span class="sell">SELL</span></h3>
+                        {% else %}
+                        <h3>Linear Regression Suggestion: <span class="hold">HOLD</span></h3>
+                        {% endif %}
+                </div>
+            </section>
+
+
+            <!-- my updates -->
+
+            <footer class="footer">
+                <p>Powered by MarketMinds &copy; 2024</p>
+            </footer>
+        </div>
+    </body>
+
+</html>

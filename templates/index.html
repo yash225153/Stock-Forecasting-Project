@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketMinds</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleIndex.css') }}">
+</head>
+
+<body>
+    <div class="container_main">
+        <!-- Logo and Site Name -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="MarketMinds Logo" class="site-logo">
+            MarketMinds
+        </div>
+        <div class="description">Your Vision for Prosperous Investments.</div>
+
+        <form action="{{ url_for('stock_details') }}" method="POST" class="search-container">
+            <input type="text" id="stock_symbol" name="stock_symbol" class="search-box" placeholder="Search for a company" required>
+            <button type="submit" class="search-btn">Get Details</button>
+        </form>
+
+        <div class="suggestions">
+            <div class="suggestion" data-ticker="RELIANCE">Reliance Industries</div>
+            <div class="suggestion" data-ticker="TCS">Tata Consultancy Services</div>
+            <div class="suggestion" data-ticker="HDFCBANK">HDFC Bank</div>
+            <div class="suggestion" data-ticker="INFY">Infosys</div>
+            <div class="suggestion" data-ticker="ICICIBANK">ICICI Bank</div>
+            <div class="suggestion" data-ticker="SBIN">State Bank of India</div>
+            <div class="suggestion" data-ticker="KOTAKBANK">Kotak Mahindra Bank</div>
+            <div class="suggestion" data-ticker="BHARTIARTL">Bharti Airtel</div>
+            <div class="suggestion" data-ticker="WIPRO">Wipro</div>
+            <div class="suggestion" data-ticker="ADANIGREEN">Adani Enterprises</div>
+            <div class="suggestion" data-ticker="MARUTI">Maruti Suzuki</div>
+            <div class="suggestion" data-ticker="HINDUNILVR">Hindustan Unilever</div>
+            <div class="suggestion" data-ticker="ITC">ITC</div>
+            <div class="suggestion" data-ticker="BAJFINANCE">Bajaj Finance</div>
+            <div class="suggestion" data-ticker="ASIANPAINT">Asian Paints</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.suggestion').forEach(suggestion => {
+            suggestion.addEventListener('click', function() {
+                // Get the ticker symbol from the data attribute
+                const ticker = this.getAttribute('data-ticker');
+                document.getElementById('stock_symbol').value = ticker; // Set the search box value
+            });
+        });
+    </script>
+</body>
+
+</html>
